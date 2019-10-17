@@ -11,7 +11,7 @@
 #include <cstdlib>         // Provides EXIT_SUCCESS
 #include "poly.h"         // Provides the polynomial class
 
-#include "polygif.cpp"
+//#include "polygif.cpp"
 
 using namespace std;
 using namespace coen79_lab4;
@@ -229,7 +229,7 @@ void test_gif(const polynomial& test)
     cout << "Enter lower y bound: ";
     cin >> low_y;
 
-    make_gif(test, file_name, low_x, high_x, low_y, high_y);
+    //make_gif(test, file_name, low_x, high_x, low_y, high_y);
     cout << "The file has been written" << endl;
 }
 

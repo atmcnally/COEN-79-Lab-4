@@ -103,7 +103,16 @@ namespace coen79_lab4
         typedef std::size_t size_type;
         static const size_type CAPACITY = 30;
         
-
+		keyed_bag();
+		void erase();
+		bool erase(const key_type& key);
+		void insert(const value_type& entry, const key_type& key);
+		void operator +=(const keyed_bag& addend);
+		bool has_key(const key_type& key) const;
+		value_type get(const key_type& key) const;
+		size_type size() const;
+		size_type count(const value_type& target) const;
+		bool hasDuplicateKey(const keyed_bag& otherBag) const;
         
     };
 
