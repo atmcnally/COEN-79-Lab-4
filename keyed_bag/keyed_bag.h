@@ -113,6 +113,9 @@ namespace coen79_lab4
 		size_type size() const;
 		size_type count(const value_type& target) const;
 		bool hasDuplicateKey(const keyed_bag& otherBag) const;
+
+	private:
+		int iCount;
         
     };
 
