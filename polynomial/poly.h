@@ -139,12 +139,14 @@
 #ifndef COEN79_POLY_H
 #define COEN79_POLY_H
 
-#include <iostream>  // Provides ostream
-
 namespace coen79_lab4
 {
     class polynomial
     {
+
+	private:
+		double coef[MAXIMUM_DEGREE + 1];
+		unsigned int current_degree;
 
     public:
 

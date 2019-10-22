@@ -3,7 +3,7 @@
 //
 //
 //  COEN 79
-// 
+//  Uma Bahl and Angelus McNally
 //
 //
 // TYPEDEF and MEMBER CONSTANTS for the keyed_bag class:
@@ -88,7 +88,7 @@
 #define COEN79_KEYBAG_H
 
 #include <cstdlib>  // Provides size_t
-#include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -99,24 +99,29 @@ namespace coen79_lab4
     public:
         // TYPEDEFS and MEMBER CONSTANTS
         typedef int value_type;
-        typedef string key_type;
+        typedef int key_type;
         typedef std::size_t size_type;
         static const size_type CAPACITY = 30;
         
-		keyed_bag();
-		void erase();
-		bool erase(const key_type& key);
-		void insert(const value_type& entry, const key_type& key);
-		void operator +=(const keyed_bag& addend);
-		bool has_key(const key_type& key) const;
-		value_type get(const key_type& key) const;
-		size_type size() const;
-		size_type count(const value_type& target) const;
-		bool hasDuplicateKey(const keyed_bag& otherBag) const;
-
-	private:
-		int iCount;
+        // CONSTRUCTOR
+        keyed_bag();
         
+        // MODIFICATION MEMBER FUNCTIONS
+        void erase();
+        bool erase(const key_type& key);
+        void insert(const value_type& entry, const key_type& key);
+        void operator +=(const keyed_bag& addend);
+        bool has_key(const key_type& key) const;
+        value_type get(const key_type& key) const;
+        size_type size() const;
+        size_type count(const value_type& target) const;
+        bool hasDuplicateKey(const keyed_bag& otherBag) const;
+        void print();
+
+    private:
+        int numItems;
+        value_type vals[CAPACITY];
+        key_type keys[CAPACITY];
     };
 
     // NONMEMBER FUNCTIONS for the keyed_bag class

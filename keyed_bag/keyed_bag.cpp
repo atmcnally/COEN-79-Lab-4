@@ -1,91 +1,176 @@
+// Uma Bahl and Angelus McNally
+
 #include <cstdlib>  // Provides size_t
 #include <string>
+#include "keyed_bag.h"
 
-using namespace std;
+using namespace coen79_lab4;
 
 namespace coen79_lab4
 {
-	class keyed_bag
-	{
-	public:
-		// TYPEDEFS and MEMBER CONSTANTS
-		typedef int value_type;
-		typedef string key_type;
-		typedef std::size_t size_type;
-		static const size_type CAPACITY = 30;
 
-		keyed_bag() {
-			iCount = 0;
+// structure: two arrays, one for keys and one for values
+// the corresponding value for a key is found in the same index in the values array
+// when a value is erased, the last item is placed in that index
 
-		}
-		//Postcondition: The keyed_bag has been initialized as an empty keyed_bag.
+// constructor: create a keyed bag. Intialize the numItems
+keyed_bag::keyed_bag()
+{
+    numItems = 0;
+}
 
-		void erase() {
-			//remove all items and keys
-			iCount = 0;
-		}
-		//Postcondition: This keyed_bag is emptied of all items and keys.
+// Postcondition: This keyed_bag is emptied of all items and keys.
+void keyed_bag::erase()
+{
+    numItems = 0;
+}
 
-		bool erase(const key_type& key) {
-			if (has_key()) {
-				//remove key and value
-				iCount--;
-				return true;
-			}
+// find the index of the item, and replace it with the last item in keys and vals.
+// Postcondition: If key was in the keyed_bag, then the key and its value have been removed. Otherwise the keyed_bag is unchanged. A true return value indicates that an item was removed. False indicates that nothing was removed.
+bool keyed_bag::erase(const key_type &key)
+{
+    bool hasKey = has_key(key);
+    if (hasKey)
+    {
+        size_type index = 0;
+        for (int i = 0; i < numItems; i++)
+        {
+            if (keys[i] == key)
+                index = i;
+        }
+        numItems--;
+        keys[index] = keys[numItems];
+        vals[index] = vals[numItems];
+    }
+    return hasKey;
+}
 
-			return false;
-		}
-		//Postcondition: If key was in the keyed_bag, then the key and its value have been removed; 
-		//otherwise the keyed_bag is unchanged. A true return value indicates that an item was removed; false indicates that nothing was removed.
+// Precondition: size( ) < CAPACITY, and the keyed_bag does not yet contain the given key.
+// Postcondition: A new copy of entry has been added to the keyed_bag with the corresponding key.
+void keyed_bag::insert(const value_type &entry, const key_type &key)
+{
+    if (size() >= CAPACITY || has_key(key))
+    {
+        cout << "invalid operation" << endl;
+        return;
+    }
+    else{
+        keys[numItems] = key;
+        vals[numItems] = entry;
+        numItems++;
+    }
+}
 
-		void insert(const value_type& entry, const key_type& key) {
-			assert(size() < CAPACITY);
-			assert(!keyed_bag.has_key(key));
-			//insert entry
-			iCount++;
-		}
-		//Postcondition: A new copy of entry has been added to the keyed_bag with the corresponding key.
+// Go through the addend's keys, and if the bag does not have the key, add it to the bag
+// Precondition:  size( ) + addend.size( ) <= CAPACITY. The intersection of the keyed_bags' key tables is empty (i.e. the keyed_bags) share no keys.
+// Postcondition: Each item and its key in addend has been added to this keyed_bag.
+void keyed_bag::operator+=(const keyed_bag &addend)
+{
+    if (size() + addend.size() > CAPACITY)
+    {
+        cout << "invalid operation" << endl;
+        return;
+    }
+    else
+    {
+        for (int i = 0; i < addend.size(); i++)
+        {
+            if (!has_key(addend.keys[i]))
+            {
+                insert(addend.vals[i], addend.keys[i]);
+            }
+        }
+    }
+}
 
-		void operator +=(const keyed_bag& addend) {
-			assert(size() + addend.size() <= CAPACITY);
-		}
-		//The intersection of the keyed_bags' key tables is empty (i.e. the keyed_bags) share no keys.
-		//Postcondition: Each item and its key in addend has been added to this keyed_bag.
+// Go through all the keys and check if any match
+// Postcondition: The return value is whether or not the given key is in the keyed_bag's list of keys.
+bool keyed_bag::has_key(const key_type &key) const
+{
+    for (int i = 0; i < numItems; i++)
+    {
+        if (key == keys[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
-		bool has_key(const key_type& key) const {
+// Precondition: has_key returns true for the given key.
+// Postcondtion: the data value corresponding to the given key is returned.
+keyed_bag::value_type keyed_bag::get(const key_type& key) const
+{
+    assert (has_key(key));
+    
+    int index = 0;
+    for (int i = 0; i < numItems; i++)
+    {
+        if (key == keys[i])
+        {
+            index = i;
+        }
+    }
+    return vals[index];
+}
 
-		}
-		//Postcondition: The return value is whether or not the given key is in the keyed_bag's list of keys.
-			
-		value_type get(const key_type& key) const {
-			assert(has_key(key));
+// Postcondition: The return value is the total number of items in the keyed_bag
+keyed_bag::size_type keyed_bag::size() const
+{
+    return numItems;
+}
 
-		}
-		//Postcondtion: the data value corresponding to the given key is returned.
-			
-		size_type size() const {
-			return iCount;
-		}
-		//Postcondition: The return value is the total number of items in the keyed_bag.
+// Postcondition: The return value is number of times target is in the keyed_bag.
+keyed_bag::size_type keyed_bag::count(const value_type &target) const
+{
+    size_type result = 0;
+    
+    for (int i = 0; i < numItems; i++)
+    {
+        if (vals[i] == target)
+        {
+            result++;
+        }
+    }
+    
+    return result;
+}
 
-		size_type count(const value_type& target) const {
+// for each key in the bag check if the other bag has this key
+// Postcondition: The return value is true if there is at least one key used by both this bag and the "otherBag". In other words, this function checks if there is any shared key by the two bags.
+bool keyed_bag::hasDuplicateKey(const keyed_bag &otherBag) const
+{
+    for (int i = 0; i < numItems; i++)
+    {
+        for (int j = 0; j < otherBag.numItems; j++)
+        {
+           if (keys[i] == otherBag.keys[j])
+               return true;
+        }
+    }
+    return false;
+}
 
-		}
-		//Postcondition: The return value is number of times target is in the keyed_bag.
-			
-		bool hasDuplicateKey(const keyed_bag& otherBag) const {
+// print the elements
+void keyed_bag::print()
+{
+    for (int i = 0; i < numItems; i++)
+    {
+        cout << keys[i] << ": " << vals[i] << endl;
+    }
+}
 
-		}
-		//Postcondition: The return value is true if there is at least one key used by both this bag and the "otherBag". 
-		//In other words, this function checks if there is any shared key by the two bags.
 
-	};
+// Precondition:  b1.size( ) + b2.size( ) <= keyed_bag::CAPACITY. The intersection of the keyed_bags' key tables is empty. (i.e. The two keyed_bag's have no keys in common.)
+// Postcondition: The keyed_bag returned is the union of b1 and b2.
+keyed_bag operator +(const keyed_bag& b1, const keyed_bag& b2)
+{
+    assert (b1.size() + b2.size() <= keyed_bag::CAPACITY && !b1.hasDuplicateKey(b2));
+            
+    keyed_bag result;
+    result += b1;
+    result += b2;
+    return result;
+}
 
-	keyed_bag operator +(const keyed_bag& b1, const keyed_bag& b2) {
-		assert(b1.size() + b2.size() <= keyed_bag::CAPACITY);
-		assert(!b1.hasDuplicateKey(b2));
-
-	}
-
-	//Postcondition: The keyed_bag returned is the union of b1 and b2.
 }
