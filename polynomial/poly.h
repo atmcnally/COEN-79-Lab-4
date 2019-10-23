@@ -144,10 +144,6 @@ namespace coen79_lab4
     class polynomial
     {
 
-	private:
-		double coef[MAXIMUM_DEGREE + 1];
-		unsigned int current_degree;
-
     public:
 
     	static const unsigned int MAXIMUM_DEGREE = 29;
@@ -169,13 +165,16 @@ namespace coen79_lab4
 
 		double operator( ) (double x) const;
 
+	private:
+		double coef[MAXIMUM_DEGREE + 1];
+		unsigned int current_degree;
+
     };
 
     // NON-MEMBER BINARY OPERATORS
     polynomial operator +(const polynomial& p1, const polynomial& p2);
     polynomial operator -(const polynomial& p1, const polynomial& p2);
     polynomial operator *(const polynomial& p1, const polynomial& p2);
-
     
     // NON-MEMBER OUTPUT FUNCTIONS
     std::ostream& operator << (std::ostream& out, const polynomial& p);

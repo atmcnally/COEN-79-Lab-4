@@ -1,5 +1,7 @@
 #include <iostream>  // Provides ostream
 #include <cassert>
+#include <climits>
+#include <cmath>
 #include "poly.h"
 
 using namespace std;
@@ -53,7 +55,13 @@ namespace coen79_lab4
 
 		polynomial polynomial::antiderivative() const {
 			assert(degree() < MAXIMUM_DEGREE);
-			polynomial 
+			polynomial result;
+
+			for (int i = 0; i <= degree(); i++) {
+				result.coef[i + 1] = coef[i] / (i + 1);
+			}
+
+			return result;
 		}
 		//POSTCONDITION: The return value is the antiderivative (indefinite integral) of this polynomial.
 		//NOTE: The return polynomial always has a constant term of zero.
@@ -70,7 +78,18 @@ namespace coen79_lab4
 		//NOTE: For exponents > MAXIMUM_DEGREE, the return value is always zero.
 
 		double polynomial::definite_integral(double x0, double x1) const {
-			
+			//-3x^2 + 4x + 1 becomes
+			//-x^3 + 2x^2 + x
+			polynomial result = antiderivative();
+
+			/*
+			for (int i = 0; i <= degree(); i++) {
+				result.coef[i + 1] = coef[i] / (i + 1);
+			} */
+
+			double fin = result.eval(x1) - result.eval(x0);
+
+			return fin;
 		}
 		//POSTCONDITION: Returns the value of the definite integral computed from x0 to x1.  The answer is computed analytically.
 
@@ -81,14 +100,23 @@ namespace coen79_lab4
 		//If all coefficients are zero, then the function returns zero (even though, technically, this polynomial does not have a degree).
 
 		polynomial polynomial::derivative() const {
+			polynomial deriv;
 
+			for (int i = 1; i <= degree(); i++) {
+				deriv.coef[i - 1] = coef[i] * i;
+			}
+
+			deriv.update_current_degree();
+
+			return deriv;
 		}
 		//POSTCONDITION: The return value is the first derivative of this polynomial.
 
 		double polynomial::eval(double x) const {
 			double sum = 0;
-
-
+			for (int i = 0; i <= degree(); i++) {
+				sum += coef[i] * pow(x, i);
+			}
 
 			return sum;
 		}
@@ -133,13 +161,14 @@ namespace coen79_lab4
 
 		double polynomial::operator( ) (double x) const {
 			//look at how i did this in lab 3
-			return this.eval(x);
+			return eval(x);
 		}
 		//Same as the eval member function.
 		//POSTCONDITION: The return value is the value of this polynomial with the given value for the variable x.
 
 	polynomial operator +(const polynomial& p1, const polynomial& p2) {
 		int upper = 0;
+
 		//figure out what the upperbound of the for loop should be
 		//there's a faster way to do this but i don't know what it is
 		if (p1.degree() > p2.degree()) {
@@ -148,30 +177,36 @@ namespace coen79_lab4
 		else {
 			upper = p2.degree();
 		}
+
 		polynomial result;
 
 		for (int i = 0; i <= upper; i++) {
 			result.coef[i] = p1.coef[i] + p2.coef[i];
 		}
 
+		result.update_current_degree();
 		return result;
 		
 	}
 	//POSTCONDITION: return-value is a polynomial with each coefficient equal to the sum of the coefficients of p1 & p2 for any given exponent.
 
 	polynomial operator -(const polynomial& p1, const polynomial& p2) {
+		int upper = 0;
+
 		if (p1.degree() > p2.degree()) {
 			upper = p1.degree();
 		}
 		else {
 			upper = p2.degree();
 		}
+
 		polynomial result;
 
 		for (int i = 0; i <= upper; i++) {
 			result.coef[i] = p1.coef[i] - p2.coef[i];
 		}
 
+		result.update_current_degree();
 		return result;
 	}
 	//POSTCONDITION: return-value is a polynomial with each coefficient equal to the difference of the coefficients of p1 & p2 for any given exponent.
@@ -189,6 +224,7 @@ namespace coen79_lab4
 			}
 		}
 
+		result.update_current_degree();
 		return result;
 	}
 	//POSTCONDITION: Each term of p1 has been multiplied by each term of p2, and the answer is the sum of all these term-by-term products.
@@ -203,17 +239,30 @@ namespace coen79_lab4
 		for (int i = p.degree(); i >= 0; i--) {
 			if (p.coef[i] != 0) {
 				if (i != 1 || i != 0) {
+					if (p.coef[i] > 0) {
+						//if positive, print with +
+						cout << " + " << abs(p.coef[i]) << "x";
+					}
+					else {
+						// if negative, print with -
+						cout << " - " << abs(p.coef[i]) << "x";
+					}
 					cout << p.coef[i] << "x^" << i;
 				}
 				else if (i == 1) {
 					cout << p.coef[i] << "x";
 				}
-				else {
+				else if(i == 0) {
 					cout << p.coef[i];
+				}
+				else if (i == p.degree()) {
+					cout << p.coef[i] << "x^" << i;
 				}
 				
 			}
 		}
+
+		cout << endl;
 
 	}
 	//POSTCONDITION: The polynomial has been printed to ostream out, which, in turn, has been returned to the calling function.
