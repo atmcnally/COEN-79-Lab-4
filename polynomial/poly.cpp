@@ -1,3 +1,7 @@
+// implemented by Angelus McNally, tested by Uma Bahl
+//COEN 79
+//Lab 4
+
 #include <iostream>  // Provides ostream
 #include <cassert>
 #include <climits>
@@ -47,7 +51,8 @@ namespace coen79_lab4
 		//POSTCONDITION: Adds the given amount to the coefficient of the specified exponent.
 
 		void polynomial::clear() {
-			for (int i = 0; i < current_degree; i++) {
+			update_current_degree();
+			for (int i = 0; i <= current_degree; i++) {
 				coef[i] = 0;
 			}
 		}
@@ -57,7 +62,7 @@ namespace coen79_lab4
 			assert(degree() < MAXIMUM_DEGREE);
 			polynomial result;
 
-			for (int i = 0; i <= degree(); i++) {
+			for (int i = degree(); i >= 0; i--) {
 				result.coef[i + 1] = coef[i] / (i + 1);
 			}
 
@@ -94,7 +99,14 @@ namespace coen79_lab4
 		//POSTCONDITION: Returns the value of the definite integral computed from x0 to x1.  The answer is computed analytically.
 
 		unsigned int polynomial::degree() const {
-			return current_degree;
+			int deg = 0;
+			for (int i = 1; i <= MAXIMUM_DEGREE; i++) {
+				if (coef[i] != 0) {
+					deg = i;
+				}
+			}
+			return deg;
+			//return current_degree;
 		}
 		//POSTCONDITION: The function returns the value of the largest exponent with a non-zero coefficient.
 		//If all coefficients are zero, then the function returns zero (even though, technically, this polynomial does not have a degree).
@@ -132,8 +144,9 @@ namespace coen79_lab4
 		//POSTCONDITION: The return value is true if and only if the polynomial is the zero polynomial.
 
 		unsigned int polynomial::next_term(unsigned int e) const {
+
 			int i = e + 1;
-			while (i < degree()) {
+			while (i <= degree()) {
 				if (coef[i] != 0) {
 					return i;
 				}
@@ -147,7 +160,7 @@ namespace coen79_lab4
 
 		unsigned int polynomial::previous_term(unsigned int e) const {
 			int i = e - 1;
-			while (i > 0) {
+			while (i >= 0) {
 				if (coef[i] != 0) {
 					return i;
 				}
@@ -236,37 +249,61 @@ namespace coen79_lab4
 	//				  p2 is 5x^2 - 1x + 7, then the return value is 
 	//	  10x^4 + 13x^3 + 31x^2 + 17x + 28.
 
-
-	// NON-MEMBER OUTPUT FUNCTIONS
-	std::ostream& operator << (std::ostream& out, const polynomial& p) {
+	void determineSign(ostream& out, double co) {
 		
+		if (co > 0) {
+			//if positive, print with +
+			if (co == 1) {
+				out << " + ";
+			} else {
+				out << " + " << abs(co);
+			}
+			
+		} else {
+			// if negative, print with -
+			if (co == 1) {
+				out << " - ";
+			} else {
+				out << " - " << abs(co);
+			}
+		}
+
+	}
+
+	//included std so I took out std::
+	// NON-MEMBER OUTPUT FUNCTIONS
+	ostream& operator << (ostream& out, const polynomial& p) {
+		double co = 0;
+
 		for (int i = p.degree(); i >= 0; i--) {
-			if (p.getCoef(i) != 0) {
-				if (i != 1 || i != 0) {
-					if (p.getCoef(i) > 0) {
-						//if positive, print with +
-						out << " + " << abs(p.getCoef(i)) << "x";
+			co = p.getCoef(i);
+
+			if (co != 0) {
+
+				if (i == 1) {
+					//no exponent
+					determineSign(out, co);
+					out << "x";
+				} else if (i == 0) {
+					//constant
+					determineSign(out, co);
+				} else if (i == p.degree()) {
+					//first term
+					if(co == 1) {
+						out << "x^" << i;
+					} else {
+						out << co << "x^" << i;
 					}
-					else {
-						// if negative, print with -
-						out << " - " << abs(p.getCoef(i)) << "x";
-					}
-					out << p.getCoef(i) << "x^" << i;
-				}
-				else if (i == 1) {
-					out << p.getCoef(i) << "x";
-				}
-				else if(i == 0) {
-					out << p.getCoef(i);
-				}
-				else if (i == p.degree()) {
-					out << p.getCoef(i) << "x^" << i;
+					
+				} else {
+					//if past the first term
+					determineSign(out, co);
+					out << "x^" << i;
 				}
 				
 			}
 		}
 
-		out << endl;
 		return out;
 
 	}

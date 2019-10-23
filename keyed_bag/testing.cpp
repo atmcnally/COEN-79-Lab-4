@@ -2,7 +2,7 @@
 //  testing.cpp
 //  coen79lab
 //
-// Uma Bahl and Angelus McNally
+// implemented by Uma Bahl, tested by Angelus McNally
 
 #include <stdio.h>
 #include "keyed_bag.h"

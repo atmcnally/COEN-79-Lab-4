@@ -1,7 +1,8 @@
-// Uma Bahl and Angelus McNally
+// implemented by Uma Bahl, tested by Angelus McNally
 
 #include <cstdlib>  // Provides size_t
 #include <string>
+#include <cassert>
 #include "keyed_bag.h"
 
 using namespace coen79_lab4;
