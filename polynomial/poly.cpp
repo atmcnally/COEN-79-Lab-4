@@ -15,7 +15,7 @@ namespace coen79_lab4
 	//where the A[n] are the real number coefficients and x^i represents the variable x raised to the i power. 
 	//The coefficient A[0] is called the "constant" or "zeroth" term of the polynomial.
 
-		polynomial::polynomial(double c = 0.0, unsigned int exponent = 0) {
+		polynomial::polynomial(double c, unsigned int exponent) {
 			assert(exponent <= MAXIMUM_DEGREE);
 			unsigned int current_degree = 0;
 		}
@@ -160,11 +160,15 @@ namespace coen79_lab4
 		//If there is no such term, then the return value is UINT_MAX from <climits>.
 
 		double polynomial::operator( ) (double x) const {
-			//look at how i did this in lab 3
+			
 			return eval(x);
 		}
 		//Same as the eval member function.
 		//POSTCONDITION: The return value is the value of this polynomial with the given value for the variable x.
+
+		double polynomial::getCoef(int loc) const {
+			return coef[loc];
+		}
 
 	polynomial operator +(const polynomial& p1, const polynomial& p2) {
 		int upper = 0;
@@ -237,34 +241,36 @@ namespace coen79_lab4
 	std::ostream& operator << (std::ostream& out, const polynomial& p) {
 		
 		for (int i = p.degree(); i >= 0; i--) {
-			if (p.coef[i] != 0) {
+			if (p.getCoef(i) != 0) {
 				if (i != 1 || i != 0) {
-					if (p.coef[i] > 0) {
+					if (p.getCoef(i) > 0) {
 						//if positive, print with +
-						cout << " + " << abs(p.coef[i]) << "x";
+						out << " + " << abs(p.getCoef(i)) << "x";
 					}
 					else {
 						// if negative, print with -
-						cout << " - " << abs(p.coef[i]) << "x";
+						out << " - " << abs(p.getCoef(i)) << "x";
 					}
-					cout << p.coef[i] << "x^" << i;
+					out << p.getCoef(i) << "x^" << i;
 				}
 				else if (i == 1) {
-					cout << p.coef[i] << "x";
+					out << p.getCoef(i) << "x";
 				}
 				else if(i == 0) {
-					cout << p.coef[i];
+					out << p.getCoef(i);
 				}
 				else if (i == p.degree()) {
-					cout << p.coef[i] << "x^" << i;
+					out << p.getCoef(i) << "x^" << i;
 				}
 				
 			}
 		}
 
-		cout << endl;
+		out << endl;
+		return out;
 
 	}
+
 	//POSTCONDITION: The polynomial has been printed to ostream out, which, in turn, has been returned to the calling function.
 	//The format of the polynomial when printed should be as follows:
 	//     -2.5x^2 - 4x + 5.9

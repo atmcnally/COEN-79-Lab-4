@@ -138,6 +138,7 @@
 
 #ifndef COEN79_POLY_H
 #define COEN79_POLY_H
+#include <cassert>
 
 namespace coen79_lab4
 {
@@ -164,6 +165,17 @@ namespace coen79_lab4
 		unsigned int previous_term(unsigned int e) const;
 
 		double operator( ) (double x) const;
+		double getCoef(int loc) const;
+
+		//i was getting weird errors with these outside of the class, so i declared them as friends
+
+		// NON-MEMBER BINARY OPERATORS
+		friend polynomial operator +(const polynomial& p1, const polynomial& p2);
+		friend polynomial operator -(const polynomial& p1, const polynomial& p2);
+		friend polynomial operator *(const polynomial& p1, const polynomial& p2);
+
+		// NON-MEMBER OUTPUT FUNCTIONS
+		//friend std::ostream& operator << (std::ostream& out, const polynomial& p);
 
 	private:
 		double coef[MAXIMUM_DEGREE + 1];
@@ -171,12 +183,8 @@ namespace coen79_lab4
 
     };
 
-    // NON-MEMBER BINARY OPERATORS
-    polynomial operator +(const polynomial& p1, const polynomial& p2);
-    polynomial operator -(const polynomial& p1, const polynomial& p2);
-    polynomial operator *(const polynomial& p1, const polynomial& p2);
-    
-    // NON-MEMBER OUTPUT FUNCTIONS
-    std::ostream& operator << (std::ostream& out, const polynomial& p);
+	// NON-MEMBER OUTPUT FUNCTIONS
+	std::ostream& operator << (std::ostream& out, const polynomial& p);
+
 }
 #endif
